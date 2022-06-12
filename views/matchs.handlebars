@@ -4,36 +4,32 @@
     <div class="flex-container">
         <table class="block">
         <tr>
-            <th>Player1</th>
-            <th>Player2</th>
+            <th>Winner</th>
+            <th>Looser</th>
             <th>Champion1</th>
             <th>Champion2</th>
-            <th>Winner</th>
             <th>State</th>
         </tr>
         {{#each matchs}}
         <tr>
-            <td>{{this.player1}}</td>
-            <td>{{this.player2}}</td>
+            <td>{{this.winner}}</td>
+            <td>{{this.looser}}</td>
             <td>{{this.champion1}}</td>
             <td>{{this.champion2}}</td>
-            <td>{{this.winner}}</td>
             <td>{{this.state}}</td>
         </tr>
         {{/each}}
         </table>
         <form  class="block" action="/match" method="POST" encType="multipart/form-data">
             <div>
-                <label for="player1">Player1:</label>
-                <input list="players" id="player1" name="player1"><br>
-                <label for="player2">Player2:</label>
-                <input list="players" id="player2" name="player2"><br>
-                <label for="champion1">Champion1:</label>
-                <input list="champions" id="champion1" name="champion1"><br>
-                <label for="champion2">Champion2:</label>
-                <input list="champions" id="champion2" name="champion2"><br>
-                <label for="winner">Winner:</label>
+                <label for="player1">Winner:</label>
                 <input list="players" id="winner" name="winner"><br>
+                <label for="player2">Looser:</label>
+                <input list="players" id="looser" name="looser"><br>
+                <label for="champion1">ChampionWinner:</label>
+                <input list="champions" id="champion1" name="champion1"><br>
+                <label for="champion2">ChampionLooser:</label>
+                <input list="champions" id="champion2" name="champion2"><br>
                 <label for="proof">Endgame screen (proof):</label>
                 <input type="file" id="proof" name="proof" accept="image/*">
             </div>

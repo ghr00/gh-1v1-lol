@@ -1,11 +1,47 @@
 
 
 module.exports = (connection) => {
-    const jwt = require('jsonwebtoken');
+    const rate = require('../elo/elo');
 
-    const createMatch = (playerName1, playerName2, champion1, champion2, winnerName, proof, datetime, callback) => {
-        let sql = "INSERT INTO GHDawri.Match(player1, player2, champion1, champion2, winner, proof, date) VALUES ( ?, ?, ?, ?, ?, ?, ? )";
-        let data = [ playerName1, playerName2, champion1, champion2, winnerName, proof, datetime ]
+    const confirmMatch = (matchId, callback) => {
+        getMatch(matchId, (match) => {
+            let sql = "SELECT winner, elo FROM GHDawri.Match INNER JOIN GHDawri.Player ON GHDawri.Match.winner = GHDawri.Player.name"
+            connection.query(sql, [match.id], function (error, winner, fields) {
+                if (error) { callback(false); console.error(error); }
+                else {
+                    let sql = "SELECT looser, elo FROM GHDawri.Match WHERE GHDawri.Match.id = ? INNER JOIN GHDawri.Player ON GHDawri.Match.looser = GHDawri.Player.name"
+                    connection.query(sql, [match.id], function (error, looser, fields) {
+                        if (error) { callback(false); console.error(error); }
+                        else {
+                            let winnerName = winner.name;
+                            let looserName = looser.name;
+
+                            let oldWinnerElo = winner.elo;
+                            let oldLooserElo = looser.elo;
+
+                            let newWinnerElo = rate(oldWinnerElo, oldLooserElo, true);
+                            let newLooserElo = rate(oldWinnerElo, oldLooserElo, false);
+
+                            let sql = "UPDATE GHDawri.Player SET elo = ? WHERE name = ?";
+                            connection.query(sql, [newWinnerElo, winnerName], function (error, looser, fields) {
+                                let sql = "UPDATE GHDawri.Player SET elo = ? WHERE name = ?";
+                                connection.query(sql, [newLooserElo, looserName], function (error, looser, fields) {
+                                    if(error) {
+                                        console.error(error);
+                                    }
+                                });
+                            });
+
+                        }
+                    });
+                }
+            })
+        });
+    }
+
+    const createMatch = (champion1, champion2, winnerName, looserName, proof, datetime, callback) => {
+        let sql = "INSERT INTO GHDawri.Match(champion1, champion2, winner, looser, proof, date) VALUES ( ?, ?, ?, ?, ?, ? )";
+        let data = [ champion1, champion2, winnerName, looserName, proof, datetime ]
         connection.query(sql, data, function (error, results, fields) {
             if (error) { callback(false); console.error(error); }
             else callback(true);
@@ -13,7 +49,7 @@ module.exports = (connection) => {
     }
 
     const getAllMatchs = (callback) => {
-        let sql = "SELECT player1, player2, champion1, champion2, winner, state FROM GHDawri.Match"
+        let sql = "SELECT winner, looser, champion1, champion2, state FROM GHDawri.Match"
         connection.query(sql, function (error, results, fields) {
             if (error) { callback(false); console.error(error); }
             else callback(results);
@@ -22,23 +58,9 @@ module.exports = (connection) => {
 
     }
 
-    const getMatch = (id, name, callback) => {
-        let sql;
-        let data;
-
-        if(id && !name) {
-            sql = "SELECT * FROM GHDawri.Match WHERE id = ?";
-            data = [ id ]
-        } else if(!id && name) {
-            sql = "SELECT * FROM GHDawri.Match WHERE name = ?";
-            data = [ name ]
-        } else if( id && name ) {
-            sql = "SELECT * FROM GHDawri.Match WHERE id = ? and name = ?";
-            data = [ id, name ]
-        } else {
-            throw new Error("getPlayer params are NULL");
-        }
-
+    const getMatch = (matchId, callback) => {
+        let sql = "SELECT * FROM GHDawri.Match WHERE id = ?";
+        let data = [matchId]
         connection.query(sql, data, function (error, results, fields) {
             if (error) { callback(false); console.error(error); }
             
@@ -46,5 +68,5 @@ module.exports = (connection) => {
         })
     }
 
-    return { createMatch, getAllMatchs, getMatch }
+    return { confirmMatch, createMatch, getAllMatchs, getMatch }
 }
