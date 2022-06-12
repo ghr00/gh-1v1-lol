@@ -1,0 +1,35 @@
+
+body {
+    font-size: 18px;
+}
+.intro {
+    text-align: center;
+}
+.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-element {
+    display: inline;
+}
+
+.block {
+    width: 300px;
+    border: 5px solid black;
+    padding: 50px;
+    margin: 20px;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.rules {
+    display: flex;
+}
+
+table, th, td {
+    border: 1px solid;
+  }

@@ -1,0 +1,13 @@
+<div>
+    <ul class="navbar">
+        <li class="navbar-element"><a href="/">Home</a></li>
+        <li class="navbar-element"><a href="/match">Matchs</a></li>
+        {{#if connected}}
+        <li class="navbar-element"><a href="/player/profile">Profile</a></li>
+        <li class="navbar-element"><a href="/sign_out">Sign out</a></li>
+         {{else}}
+        <li class="navbar-element"><a href="/sign_up">Sign up</a></li>
+        <li class="navbar-element"><a href="/sign_in">Sign in</a></li>
+        {{/if}}
+    </ul>
+</div>

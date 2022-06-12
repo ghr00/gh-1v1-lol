@@ -1,0 +1,27 @@
+{{> navbar this }}
+
+<div>
+    <form action="/player" method="POST">
+        <div>
+            <label for="name">Username:</label><br>
+            <input type="text" id="name" name="name"><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email"><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password"><br>
+            <label for="confirmedPassword">Confirm password:</label><br>
+            <input type="password" id="confirmedPassword" name="confirmedPassword"><br>
+        </div>
+        <div>
+            <label for="city">City:</label><br>
+            <input type="text" id="city" name="city"><br>
+            <label for="country">Country:</label><br>
+            <input type="text" id="country" name="country"><br>
+            <label for="opgg">Op.GG:</label><br>
+            <input type="text" id="opgg" name="opgg"><br>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+{{> footnote}}

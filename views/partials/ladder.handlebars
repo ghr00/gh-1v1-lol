@@ -1,0 +1,12 @@
+    <table class="block">
+        <tr>
+            <th>Name</th>
+            <th>Division</th>
+            <th>Elo</th>
+        </tr>
+    {{#each players}}
+        <td>{{this.name}}</td>
+        <td>{{this.division}}</td>
+        <td>{{this.elo}}</td>
+    {{/each}}
+    </table>
