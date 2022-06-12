@@ -5,12 +5,18 @@ module.exports = (matchController, playerController, championController) => {
 
     const path = require('path');
 
-    const { createMatch, getMatch, getAllMatchs } = matchController;
+    const { createMatch, confirmMatch, getAllMatchs } = matchController;
     const { getAllPlayers } = playerController;
     const { getAllChampions } = championController;
 
+    router.patch('/confirm', function(req, res) {
+        let { matchId } = req.body;
+
+        confirmMatch(matchId, (state) => state === true ? res.status(200).send() : res.status(500).send());
+    });
+
     router.post("/", function(req, res) {
-        let { player1, player2, champion1, champion2, winner } = req.body;
+        let { winner, looser, champion1, champion2  } = req.body;
 
         let { proof } = req.files;
         
@@ -29,7 +35,7 @@ module.exports = (matchController, playerController, championController) => {
             if (err)
               return res.status(500).send(err);
             
-            createMatch(player1, player2, champion1, champion2, winner, filename, datetime, (result) => {
+            createMatch(champion1, champion2, winner, looser, filename, datetime, (result) => {
                 if(result) {
                     res.status(201).redirect('/');
                 } else {

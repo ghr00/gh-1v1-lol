@@ -14,4 +14,4 @@ let elo = (K) => {
     return rate;
 }
 
-module.exports = elo(400)
+module.exports = elo(100)

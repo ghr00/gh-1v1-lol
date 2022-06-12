@@ -5,22 +5,27 @@ module.exports = (connection) => {
 
     const confirmMatch = (matchId, callback) => {
         getMatch(matchId, (match) => {
-            let sql = "SELECT winner, elo FROM GHDawri.Match INNER JOIN GHDawri.Player ON GHDawri.Match.winner = GHDawri.Player.name"
-            connection.query(sql, [match.id], function (error, winner, fields) {
+            let sql = "SELECT winner, elo FROM GHDawri.Match INNER JOIN GHDawri.Player ON GHDawri.Match.id = ? AND GHDawri.Match.winner = GHDawri.Player.name"
+            connection.query(sql, [matchId], function (error, _winner, fields) {
                 if (error) { callback(false); console.error(error); }
                 else {
-                    let sql = "SELECT looser, elo FROM GHDawri.Match WHERE GHDawri.Match.id = ? INNER JOIN GHDawri.Player ON GHDawri.Match.looser = GHDawri.Player.name"
-                    connection.query(sql, [match.id], function (error, looser, fields) {
+                    let sql = "SELECT looser, elo FROM GHDawri.Match INNER JOIN GHDawri.Player ON GHDawri.Match.id = ? AND GHDawri.Match.looser = GHDawri.Player.name"
+                    connection.query(sql, [matchId], function (error, _looser, fields) {
                         if (error) { callback(false); console.error(error); }
                         else {
-                            let winnerName = winner.name;
-                            let looserName = looser.name;
+                            console.log(_winner, _looser)
+                            
+                            let winner = _winner[0]
+                            let looser = _looser[0]
+
+                            let winnerName = winner.winner;
+                            let looserName = looser.looser;
 
                             let oldWinnerElo = winner.elo;
                             let oldLooserElo = looser.elo;
 
                             let newWinnerElo = rate(oldWinnerElo, oldLooserElo, true);
-                            let newLooserElo = rate(oldWinnerElo, oldLooserElo, false);
+                            let newLooserElo = rate(oldLooserElo, oldWinnerElo, false);
 
                             let sql = "UPDATE GHDawri.Player SET elo = ? WHERE name = ?";
                             connection.query(sql, [newWinnerElo, winnerName], function (error, looser, fields) {
@@ -28,6 +33,15 @@ module.exports = (connection) => {
                                 connection.query(sql, [newLooserElo, looserName], function (error, looser, fields) {
                                     if(error) {
                                         console.error(error);
+                                    } else {
+
+                                        let sql = "UPDATE GHDawri.Match SET state = 'Confirmed' WHERE id = ?";
+                                        connection.query(sql, [matchId], function (error, looser, fields) {
+                                            if(error) {
+                                                console.error(error);
+                                            }
+                                            callback(true);
+                                        })
                                     }
                                 });
                             });

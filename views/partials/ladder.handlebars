@@ -5,8 +5,10 @@
             <th>Elo</th>
         </tr>
     {{#each players}}
-        <td>{{this.name}}</td>
-        <td>{{this.division}}</td>
-        <td>{{this.elo}}</td>
+        <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.division}}</td>
+            <td>{{this.elo}}</td>
+        </tr>
     {{/each}}
     </table>
